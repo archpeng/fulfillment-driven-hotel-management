@@ -23,5 +23,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
-# 启动服务 (使用简化版本，不依赖外部数据库)
-CMD ["node", "server-simple.js"]
+# 启动服务 (使用带同步功能的版本)
+CMD ["node", "server-with-sync.js"]
