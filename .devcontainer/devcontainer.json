@@ -1,52 +1,127 @@
 {
-  "name": "履约驱动酒店管理系统",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:18",
+  "name": "履约驱动酒店管理系统 - Codespace",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
   
-  // 特性
+  // Features to add to the dev container
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  },
-  
-  // 端口转发
-  "forwardPorts": [3000, 5173, 8080],
-  "portsAttributes": {
-    "3000": {
-      "label": "应用主端口",
-      "onAutoForward": "openBrowser"
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true,
+      "username": "automatic",
+      "uid": "automatic",
+      "gid": "automatic"
     },
-    "5173": {
-      "label": "Vite开发服务器",
-      "onAutoForward": "openBrowser"
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
     }
   },
-  
-  // VS Code设置
+
+  // 端口转发配置
+  "forwardPorts": [3000, 3001, 5984, 6379, 8080, 8000],
+  "portsAttributes": {
+    "3000": {
+      "label": "主应用 (Vite)",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "HMR WebSocket",
+      "onAutoForward": "silent"
+    },
+    "5984": {
+      "label": "CouchDB",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "后端API",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // VS Code扩展
   "customizations": {
     "vscode": {
       "extensions": [
-        "bradlc.vscode-tailwindcss",
-        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-vscode.vscode-eslint",
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
         "statelyai.stately-vscode",
-        "ms-vscode.vscode-json"
+        "github.copilot",
+        "github.copilot-chat",
+        "ms-azuretools.vscode-docker",
+        "redhat.vscode-yaml",
+        "orta.vscode-jest",
+        "vitest.explorer",
+        "yzhang.markdown-all-in-one",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "streetsidesoftware.code-spell-checker",
+        "wayou.vscode-todo-highlight",
+        "gruntfuggly.todo-tree"
       ],
       "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
         "typescript.preferences.strictFunctionTypes": true,
+        "typescript.preferences.strictNullChecks": true,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": true
-        }
+          "source.fixAll.eslint": true,
+          "source.organizeImports": true
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/.git": true
+        },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact"
+        ]
       }
     }
   },
+
+  // 启动后命令
+  "postCreateCommand": ".devcontainer/setup.sh",
+  "postStartCommand": "echo '🏨 履约驱动酒店管理系统 Codespace 已就绪！' && echo '💡 运行 npm run dev 启动开发服务器'",
   
-  // 生命周期脚本
-  "onCreateCommand": "npm install",
-  "postStartCommand": "npm run build",
-  
+  // 环境变量
+  "remoteEnv": {
+    "NODE_ENV": "development",
+    "VITE_BACKEND_URL": "http://localhost:8080",
+    "COUCH_URL": "http://admin:password@localhost:5984"
+  },
+
+  // 挂载本地文件夹
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+
   // 用户设置
   "remoteUser": "node",
-  "workspaceFolder": "/workspaces/saas-project"
+  
+  // 性能优化
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
 }

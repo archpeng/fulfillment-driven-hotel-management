@@ -1,0 +1,27 @@
+{
+  "repositories": [
+    {
+      "repository": "archpeng/fulfillment-driven-hotel-management",
+      "devcontainerPath": ".devcontainer/devcontainer.json",
+      "prebuildConfiguration": {
+        "enabled": true,
+        "updateFrequency": "onPush",
+        "poolSize": 1,
+        "branchFilter": {
+          "include": ["main", "develop"],
+          "exclude": ["feature/*", "bugfix/*"]
+        }
+      },
+      "secrets": {
+        "VITE_BACKEND_URL": {
+          "description": "后端API地址",
+          "documentationUrl": "https://github.com/archpeng/fulfillment-driven-hotel-management/blob/main/docs/setup.md"
+        },
+        "COUCH_URL": {
+          "description": "CouchDB连接URL",
+          "documentationUrl": "https://github.com/archpeng/fulfillment-driven-hotel-management/blob/main/docs/database.md"
+        }
+      }
+    }
+  ]
+}
