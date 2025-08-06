@@ -9,6 +9,9 @@ import './style.css'
 const APP_VERSION = '1.1.0'
 const BUILD_TIME = new Date().toISOString()
 
+// 后端API配置
+const API_BASE_URL = 'https://fulfillment-backend.up.railway.app' // 稍后替换为您的实际Railway URL
+
 // 应用初始化
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="app-container">
@@ -157,6 +160,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <p><strong>注意</strong>: 完整的前端应用正在开发中，当前展示为项目介绍页面。</p>
           
           <div class="demo-links">
+            <button id="test-backend-btn" class="demo-link">
+              <span class="link-icon">🔧</span>
+              测试后端API
+            </button>
             <a href="https://github.com/archpeng/fulfillment-driven-hotel-management" 
                class="demo-link" target="_blank" rel="noopener">
               <span class="link-icon">📚</span>
@@ -173,6 +180,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               项目文档
             </a>
           </div>
+          <div id="api-test-result" class="api-result" style="display: none;"></div>
         </div>
       </section>
     </main>
@@ -214,7 +222,55 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // 后端API测试功能
+  document.getElementById('test-backend-btn')?.addEventListener('click', async () => {
+    const button = document.getElementById('test-backend-btn') as HTMLButtonElement;
+    const resultDiv = document.getElementById('api-test-result') as HTMLDivElement;
+    
+    button.disabled = true;
+    button.textContent = '测试中...';
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<p>🔄 正在连接后端API...</p>';
+    
+    try {
+      // 测试健康检查
+      const healthResponse = await fetch(`${API_BASE_URL}/health`);
+      const healthData = await healthResponse.json();
+      
+      // 测试版本信息
+      const versionResponse = await fetch(`${API_BASE_URL}/api/version`);
+      const versionData = await versionResponse.json();
+      
+      resultDiv.innerHTML = `
+        <div class="api-success">
+          <h4>✅ 后端API连接成功！</h4>
+          <div class="api-details">
+            <p><strong>服务状态：</strong>${healthData.status}</p>
+            <p><strong>服务版本：</strong>${versionData.version}</p>
+            <p><strong>架构模式：</strong>${versionData.architecture}</p>
+            <p><strong>响应时间：</strong>${Date.now() - performance.now()}ms</p>
+            <p><strong>后端地址：</strong><a href="${API_BASE_URL}" target="_blank">${API_BASE_URL}</a></p>
+          </div>
+        </div>
+      `;
+    } catch (error) {
+      resultDiv.innerHTML = `
+        <div class="api-error">
+          <h4>❌ 后端API连接失败</h4>
+          <p>后端服务可能还未部署或启动</p>
+          <p><strong>错误信息：</strong>${error.message}</p>
+          <p><strong>预期地址：</strong>${API_BASE_URL}</p>
+          <p><em>请参考部署指南完成后端部署</em></p>
+        </div>
+      `;
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '<span class="link-icon">🔧</span>测试后端API';
+    }
+  });
+
   console.log('🎉 履约驱动酒店管理系统已启动！');
   console.log('📊 当前版本:', APP_VERSION);
   console.log('🏗️ 架构: DDD + XState + RxDB');
+  console.log('🔗 后端API:', API_BASE_URL);
 });

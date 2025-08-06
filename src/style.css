@@ -426,6 +426,58 @@ body {
   font-size: 1.1rem;
 }
 
+/* API测试结果样式 */
+.api-result {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--border-color);
+}
+
+.api-success {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--success-color);
+}
+
+.api-success h4 {
+  color: var(--success-color);
+  margin-bottom: 1rem;
+}
+
+.api-details {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.api-details p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.api-details a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.api-details a:hover {
+  text-decoration: underline;
+}
+
+.api-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--error-color);
+}
+
+.api-error h4 {
+  color: var(--error-color);
+  margin-bottom: 1rem;
+}
+
+.api-error p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
 /* 页脚 */
 .app-footer {
   background: var(--text-primary);

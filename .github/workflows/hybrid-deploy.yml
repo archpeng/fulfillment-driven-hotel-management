@@ -1,0 +1,73 @@
+# 履约驱动酒店管理系统 - 混合部署
+# 前端部署到GitHub Pages，后端部署到免费云平台
+
+name: Hybrid Deployment
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # 部署前端到GitHub Pages
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: 安装依赖
+        run: npm ci
+        
+      - name: 构建前端
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: https://fulfillment-backend.railway.app
+          
+      - name: 部署到GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          cname: hotel.archpeng.dev  # 可选：自定义域名
+
+  # 触发后端部署（通过Railway）
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 触发Railway部署
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            https://backboard.railway.app/graphql/v2 \
+            -d '{"query":"mutation { deploymentCreate(input: { projectId: \"${{ secrets.RAILWAY_PROJECT_ID }}\", environmentId: \"${{ secrets.RAILWAY_ENV_ID }}\" }) { id } }"}'
+
+  # 健康检查
+  health-check:
+    needs: [deploy-frontend, deploy-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检查前端部署
+        run: |
+          sleep 60  # 等待部署完成
+          curl -f https://archpeng.github.io/fulfillment-driven-hotel-management/ || exit 1
+          
+      - name: 检查后端部署
+        run: |
+          curl -f https://fulfillment-backend.railway.app/health || exit 1
+          
+      - name: 部署成功通知
+        run: |
+          echo "🎉 履约驱动酒店管理系统部署成功！"
+          echo "🌐 前端地址: https://archpeng.github.io/fulfillment-driven-hotel-management/"
+          echo "🔧 后端地址: https://fulfillment-backend.railway.app"
