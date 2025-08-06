@@ -4,12 +4,14 @@
   "description": "履约驱动酒店管理系统 - 后端API服务",
   "main": "server.js",
   "scripts": {
-    "start": "node server-with-sync.js",
+    "start": "node server-smart.js",
+    "start:pouchdb": "DB_TYPE=pouchdb node server-smart.js",
+    "start:cloudant": "DB_TYPE=cloudant node server-smart.js",
     "start:simple": "node server-simple.js",
     "start:full": "node server.js",
-    "dev": "nodemon server-with-sync.js",
-    "dev:simple": "nodemon server-simple.js",
-    "dev:full": "nodemon server.js",
+    "dev": "nodemon server-smart.js",
+    "dev:pouchdb": "DB_TYPE=pouchdb nodemon server-smart.js",
+    "dev:cloudant": "DB_TYPE=cloudant nodemon server-smart.js",
     "test": "jest",
     "health": "curl -f http://localhost:3000/health || exit 1"
   },
