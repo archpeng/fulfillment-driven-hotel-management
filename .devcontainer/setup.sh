@@ -10,11 +10,15 @@ NC='\033[0m' # No Color
 
 # 检查并安装依赖
 echo -e "${YELLOW}📦 安装项目依赖...${NC}"
-npm install
+npm ci || npm install
 
 # 安装后端依赖
 echo -e "${YELLOW}📦 安装后端依赖...${NC}"
-cd backend && npm install && cd ..
+cd backend && (npm ci || npm install) && cd ..
+
+# 安装全局工具（确保命令可用）
+echo -e "${YELLOW}🔧 安装全局开发工具...${NC}"
+npm install -g vite nodemon concurrently tsx typescript @xstate/cli
 
 # 初始化数据库
 echo -e "${YELLOW}🗄️ 初始化 CouchDB...${NC}"

@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "npx vite --host 0.0.0.0",
+    "build": "npx vite build", 
+    "preview": "npx vite preview --host 0.0.0.0",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
@@ -25,7 +25,8 @@
     "claude": "docker exec -it saas-dev-env claude",
     "codespace:test": "node scripts/test-codespace-config.cjs",
     "codespace:setup": ".devcontainer/setup.sh",
-    "help": "echo '🏨 履约驱动酒店管理系统 - 可用命令:' && echo '开发: npm run dev' && echo '构建: npm run build' && echo '测试: npm run test' && echo 'Codespace测试: npm run codespace:test'"
+    "codespace:fix": "./scripts/fix-codespace-deps.sh",
+    "help": "echo '🏨 履约驱动酒店管理系统 - 可用命令:' && echo '开发: npm run dev' && echo '构建: npm run build' && echo '测试: npm run test' && echo 'Codespace修复: npm run codespace:fix'"
   },
   "keywords": [
     "hotel-management",

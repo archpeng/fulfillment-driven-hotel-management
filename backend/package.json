@@ -9,9 +9,9 @@
     "start:cloudant": "DB_TYPE=cloudant node server-smart.js",
     "start:simple": "node server-simple.js",
     "start:full": "node server.js",
-    "dev": "nodemon server-smart.js",
-    "dev:pouchdb": "DB_TYPE=pouchdb nodemon server-smart.js",
-    "dev:cloudant": "DB_TYPE=cloudant nodemon server-smart.js",
+    "dev": "npx nodemon server-smart.js",
+    "dev:pouchdb": "DB_TYPE=pouchdb npx nodemon server-smart.js", 
+    "dev:cloudant": "DB_TYPE=cloudant npx nodemon server-smart.js",
     "test": "jest",
     "health": "curl -f http://localhost:3000/health || exit 1"
   },
