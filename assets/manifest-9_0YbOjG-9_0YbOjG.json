@@ -1,0 +1,19 @@
+{
+  "name": "履约驱动酒店管理系统",
+  "short_name": "履约酒店",
+  "description": "我们不管理客房，我们管理客人 - 基于DDD+XState+RxDB的现代化酒店管理系统",
+  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "./vite.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"]
+}
