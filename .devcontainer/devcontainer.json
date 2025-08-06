@@ -2,7 +2,6 @@
   "name": "履约驱动酒店管理系统 - Codespace",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
   
-  // Features to add to the dev container
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
@@ -27,7 +26,6 @@
     }
   },
 
-  // 端口转发配置
   "forwardPorts": [3000, 3001, 5984, 6379, 8080, 8000],
   "portsAttributes": {
     "3000": {
@@ -52,7 +50,6 @@
     }
   },
 
-  // VS Code扩展
   "customizations": {
     "vscode": {
       "extensions": [
@@ -99,26 +96,21 @@
     }
   },
 
-  // 启动后命令
   "postCreateCommand": ".devcontainer/setup.sh",
   "postStartCommand": "echo '🏨 履约驱动酒店管理系统 Codespace 已就绪！' && echo '💡 运行 npm run dev 启动开发服务器'",
   
-  // 环境变量
   "remoteEnv": {
     "NODE_ENV": "development",
     "VITE_BACKEND_URL": "http://localhost:8080",
     "COUCH_URL": "http://admin:password@localhost:5984"
   },
 
-  // 挂载本地文件夹
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
   ],
 
-  // 用户设置
   "remoteUser": "node",
   
-  // 性能优化
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb",

@@ -22,7 +22,10 @@
     "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f saas-dev",
     "docker:restart": "npm run docker:down && npm run docker:up",
     "docker:clean": "docker-compose -f docker-compose.dev.yml down -v --remove-orphans",
-    "claude": "docker exec -it saas-dev-env claude"
+    "claude": "docker exec -it saas-dev-env claude",
+    "codespace:test": "node scripts/test-codespace-config.cjs",
+    "codespace:setup": ".devcontainer/setup.sh",
+    "help": "echo '🏨 履约驱动酒店管理系统 - 可用命令:' && echo '开发: npm run dev' && echo '构建: npm run build' && echo '测试: npm run test' && echo 'Codespace测试: npm run codespace:test'"
   },
   "keywords": [
     "hotel-management",
