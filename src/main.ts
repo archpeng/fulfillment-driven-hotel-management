@@ -4,13 +4,18 @@
  */
 
 import './style.css'
+import './components/dashboard.css'
+import { FulfillmentDashboard } from './components/FulfillmentDashboard'
 
 // 版本信息
-const APP_VERSION = '1.1.0'
+const APP_VERSION = '1.2.0'
 const BUILD_TIME = new Date().toISOString()
 
 // 后端API配置
 const API_BASE_URL = 'https://fulfillment-driven-hotel-management-production.up.railway.app'
+
+// 检测是否为演示模式
+const isDemoMode = window.location.search.includes('demo=true') || window.location.hash.includes('demo');
 
 // 应用初始化
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -164,6 +169,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               <span class="link-icon">🔧</span>
               测试后端API
             </button>
+            <button id="launch-dashboard-btn" class="demo-link" style="background: #10b981;">
+              <span class="link-icon">🚀</span>
+              启动履约管理系统
+            </button>
             <a href="https://github.com/archpeng/fulfillment-driven-hotel-management" 
                class="demo-link" target="_blank" rel="noopener">
               <span class="link-icon">📚</span>
@@ -222,6 +231,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // 履约管理系统启动功能
+  document.getElementById('launch-dashboard-btn')?.addEventListener('click', async () => {
+    const button = document.getElementById('launch-dashboard-btn') as HTMLButtonElement;
+    const originalContent = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="link-icon">⏳</span>启动中...';
+    
+    try {
+      // 隐藏介绍页面
+      document.querySelector('.app-container')!.style.display = 'none';
+      
+      // 创建仪表板容器
+      document.body.innerHTML = `
+        <div id="dashboard-container">
+          <div class="loading-dashboard">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在初始化履约驱动管理系统...</div>
+          </div>
+        </div>
+      `;
+      
+      // 初始化仪表板
+      window.fulfillmentDashboard = new FulfillmentDashboard('dashboard-container');
+      await window.fulfillmentDashboard.initialize();
+      
+    } catch (error) {
+      console.error('启动仪表板失败:', error);
+      alert(`启动失败: ${error.message}`);
+      
+      // 恢复按钮状态
+      button.disabled = false;
+      button.innerHTML = originalContent;
+      
+      // 恢复介绍页面
+      document.querySelector('.app-container')!.style.display = 'block';
+    }
+  });
+
   // 后端API测试功能
   document.getElementById('test-backend-btn')?.addEventListener('click', async () => {
     const button = document.getElementById('test-backend-btn') as HTMLButtonElement;
@@ -273,4 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('📊 当前版本:', APP_VERSION);
   console.log('🏗️ 架构: DDD + XState + RxDB');
   console.log('🔗 后端API:', API_BASE_URL);
+  console.log('💡 提示: 点击"启动履约管理系统"体验完整功能');
+  
+  // 如果是演示模式，自动启动仪表板
+  if (isDemoMode) {
+    setTimeout(() => {
+      document.getElementById('launch-dashboard-btn')?.click();
+    }, 2000);
+  }
 });
