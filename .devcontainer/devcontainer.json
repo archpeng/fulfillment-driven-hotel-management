@@ -1,0 +1,52 @@
+{
+  "name": "履约驱动酒店管理系统",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:18",
+  
+  // 特性
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  
+  // 端口转发
+  "forwardPorts": [3000, 5173, 8080],
+  "portsAttributes": {
+    "3000": {
+      "label": "应用主端口",
+      "onAutoForward": "openBrowser"
+    },
+    "5173": {
+      "label": "Vite开发服务器",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  
+  // VS Code设置
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-eslint",
+        "statelyai.stately-vscode",
+        "ms-vscode.vscode-json"
+      ],
+      "settings": {
+        "typescript.preferences.strictFunctionTypes": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        }
+      }
+    }
+  },
+  
+  // 生命周期脚本
+  "onCreateCommand": "npm install",
+  "postStartCommand": "npm run build",
+  
+  // 用户设置
+  "remoteUser": "node",
+  "workspaceFolder": "/workspaces/saas-project"
+}

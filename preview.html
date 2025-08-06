@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>履约驱动酒店管理系统 - 预览版</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .demo-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+        }
+
+        .demo-content {
+            padding: 30px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .preview-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .preview-mockup {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .architecture-diagram {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏨 履约驱动酒店管理系统</h1>
+            <p>"我们不管理客房，我们管理客人"</p>
+        </header>
+
+        <div class="demo-card">
+            <div class="demo-header">
+                <h2>📊 项目概览</h2>
+                <p>基于履约驱动架构的现代化酒店管理系统</p>
+            </div>
+            <div class="demo-content">
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🎯 履约驱动架构</h3>
+                        <p>以客人履约历程为核心的五阶段流程管理</p>
+                        <span class="status-badge status-completed">已完成</span>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔄 实时数据同步</h3>
+                        <p>离线优先，智能同步，支持多设备协作</p>
+                        <span class="status-badge status-completed">已完成</span>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📈 性能监控系统</h3>
+                        <p>企业级性能监控和统计分析</p>
+                        <span class="status-badge status-completed">已完成</span>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🧪 离线模式测试</h3>
+                        <p>完整的离线功能验证测试套件</p>
+                        <span class="status-badge status-completed">已完成</span>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📱 移动端优化</h3>
+                        <p>响应式设计，移动端体验优化</p>
+                        <span class="status-badge status-pending">待完成</span>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔧 状态机管理</h3>
+                        <p>XState驱动的复杂业务流程管理</p>
+                        <span class="status-badge status-completed">已完成</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>🛠️ 技术架构</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">TypeScript 5.x</span>
+                <span class="tech-tag">XState 5.x</span>
+                <span class="tech-tag">RxDB 16.x</span>
+                <span class="tech-tag">DDD</span>
+                <span class="tech-tag">离线优先</span>
+                <span class="tech-tag">Docker</span>
+                <span class="tech-tag">Vite</span>
+                <span class="tech-tag">Vitest</span>
+            </div>
+
+            <div class="architecture-diagram">
+<pre>
+📊 履约驱动架构 (Fulfillment-Driven Architecture)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 五阶段履约流程:
+   认知 → 评估 → 预订 → 体验 → 反馈
+   
+🏗️ 技术架构层次:
+┌─────────────────────────────────────────────────────────┐
+│  🎨 用户界面层 (UI Layer)                               │
+│  • FulfillmentDashboard • 性能监控面板 • 事件跟踪      │
+├─────────────────────────────────────────────────────────┤
+│  ⚙️ 业务逻辑层 (Business Layer)                         │
+│  • XState状态机 • DDD聚合根 • 履约事件处理             │
+├─────────────────────────────────────────────────────────┤
+│  💾 数据访问层 (Data Layer)                             │
+│  • RxDB离线存储 • 实时同步 • 冲突解决                  │
+├─────────────────────────────────────────────────────────┤
+│  🔧 基础设施层 (Infrastructure)                         │
+│  • 性能监控 • 离线测试 • Docker容器化                  │
+└─────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>🚀 部署选项</h2>
+            <p>该项目支持多种部署和预览方式：</p>
+            
+            <div style="margin: 20px 0;">
+                <a href="#" class="btn" onclick="alert('请在GitHub仓库中启用GitHub Pages功能')">📄 GitHub Pages</a>
+                <a href="#" class="btn" onclick="alert('请连接Vercel账户进行自动部署')">⚡ Vercel部署</a>
+                <a href="#" class="btn" onclick="alert('使用GitHub Codespaces在线开发')">☁️ Codespaces</a>
+                <a href="#" class="btn" onclick="showDockerInstructions()">🐳 Docker本地</a>
+            </div>
+
+            <div id="docker-instructions" style="display:none; background:#f8f9fa; padding:20px; border-radius:10px; margin-top:20px;">
+                <h3>🐳 Docker本地运行指令：</h3>
+                <div style="background:#000; color:#00ff00; padding:15px; border-radius:5px; font-family:monospace;">
+                    # 启动Docker开发环境<br>
+                    npm run docker:up<br><br>
+                    
+                    # 查看运行状态<br>
+                    npm run docker:logs<br><br>
+                    
+                    # 访问应用<br>
+                    http://localhost:4500
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-mockup">
+            <h3>🎭 仪表板预览 (开发中)</h3>
+            <p>完整的履约驱动酒店管理系统仪表板</p>
+            <p>包含：实时同步、性能监控、事件追踪、离线测试等功能</p>
+            <div style="margin: 20px 0; padding: 20px; background: white; border-radius: 10px;">
+                <strong>功能模块：</strong><br>
+                ✅ XState状态机集成<br>
+                ✅ 实时数据同步功能<br>
+                ✅ 履约事件追踪系统<br>
+                ✅ 离线模式测试<br>
+                ✅ 性能监控和统计<br>
+                🔄 移动端体验优化 (进行中)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDockerInstructions() {
+            const instructions = document.getElementById('docker-instructions');
+            instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 简单的交互效果
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.transition = 'all 0.3s';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
