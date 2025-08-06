@@ -1,0 +1,58 @@
+{
+  "name": "fulfillment-driven-hotel-management",
+  "version": "1.1.0",
+  "description": "履约驱动的酒店管理系统 - 厚客户端模块化单体架构",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src/ --ext .ts,.tsx",
+    "lint:fix": "eslint src/ --ext .ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write src/",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:build": "docker-compose -f docker-compose.dev.yml build",
+    "docker:shell": "docker exec -it saas-dev-env bash",
+    "docker:logs": "docker-compose -f docker-compose.dev.yml logs -f saas-dev",
+    "docker:restart": "npm run docker:down && npm run docker:up",
+    "docker:clean": "docker-compose -f docker-compose.dev.yml down -v --remove-orphans",
+    "claude": "docker exec -it saas-dev-env claude"
+  },
+  "keywords": [
+    "hotel-management",
+    "fulfillment-driven",
+    "ddd",
+    "typescript",
+    "xstate",
+    "rxdb",
+    "offline-first",
+    "rich-client",
+    "claude-code",
+    "docker",
+    "enterprise"
+  ],
+  "author": "SaaS Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0",
+    "eslint": "^8.0.0",
+    "@types/node": "^20.0.0",
+    "prettier": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  }
+}

@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # 主要SaaS开发环境
+  saas-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: saas-dev-env
+    volumes:
+      # 挂载项目代码 (双向同步)
+      - ./:/workspace
+      - /workspace/node_modules  # 避免node_modules冲突
+      # 挂载Git配置 (如果存在，可选)
+      # - ~/.gitconfig:/root/.gitconfig:ro
+      # - ~/.ssh:/root/.ssh:ro
+      # 挂载AWS配置 (如果存在，可选)
+      # - ~/.aws:/root/.aws:ro
+    ports:
+      - "4500:3000"    # 主应用端口 (避免与现有服务冲突)
+      - "4501:3001"    # HMR端口
+      - "5175:5173"    # Vite dev server
+      - "8085:8080"    # 备用端口
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # 文件监听优化
+      - PORT=3000
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    networks:
+      - saas-network
+    restart: unless-stopped
+
+  # SaaS专用数据库
+  saas-postgres:
+    image: postgres:15-alpine
+    container_name: saas-postgres-dev
+    environment:
+      POSTGRES_DB: saas_dev
+      POSTGRES_USER: saas_user
+      POSTGRES_PASSWORD: saas_dev_password
+    ports:
+      - "5433:5432"  # 避免与现有数据库冲突
+    volumes:
+      - saas_postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - saas-network
+    restart: unless-stopped
+
+  # SaaS专用Redis缓存
+  saas-redis:
+    image: redis:7-alpine
+    container_name: saas-redis-dev
+    ports:
+      - "6380:6379"  # 避免与现有Redis冲突
+    volumes:
+      - saas_redis_data:/data
+    networks:
+      - saas-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # 数据库管理工具 (可选)
+  saas-adminer:
+    image: adminer:latest
+    container_name: saas-adminer
+    ports:
+      - "8086:8080"
+    networks:
+      - saas-network
+    restart: unless-stopped
+    depends_on:
+      - saas-postgres
+
+volumes:
+  saas_postgres_data:
+  saas_redis_data:
+
+networks:
+  saas-network:
+    driver: bridge
