@@ -30,14 +30,8 @@ export default defineConfig({
     // 性能配置
     chunkSizeWarningLimit: 1000,
     
-    // 压缩配置
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    // 压缩配置 - 简化为默认压缩
+    minify: true
   },
   
   // 开发服务器配置
