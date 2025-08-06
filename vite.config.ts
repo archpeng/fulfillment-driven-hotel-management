@@ -6,7 +6,7 @@ export default defineConfig({
   // GitHub Pages部署配置
   base: process.env.NODE_ENV === 'production' 
     ? '/fulfillment-driven-hotel-management/' 
-    : '/',
+    : './',
   
   // 构建配置
   build: {
