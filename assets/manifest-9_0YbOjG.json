@@ -6,11 +6,11 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/fulfillment-driven-hotel-management/",
-  "start_url": "/fulfillment-driven-hotel-management/",
+  "scope": "./",
+  "start_url": "./",
   "icons": [
     {
-      "src": "/fulfillment-driven-hotel-management/vite.svg",
+      "src": "./vite.svg",
       "sizes": "32x32",
       "type": "image/svg+xml"
     }

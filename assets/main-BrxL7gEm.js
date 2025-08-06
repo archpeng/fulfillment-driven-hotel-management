@@ -1,19 +1,4 @@
-/**
- * 履约驱动酒店管理系统 - 主入口文件
- * "我们不管理客房，我们管理客人"
- */
-
-import './style.css'
-
-// 版本信息
-const APP_VERSION = '1.1.0'
-const BUILD_TIME = new Date().toISOString()
-
-// 后端API配置
-const API_BASE_URL = 'https://fulfillment-driven-hotel-management-production.up.railway.app'
-
-// 应用初始化
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))s(e);new MutationObserver(e=>{for(const a of e)if(a.type==="childList")for(const l of a.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&s(l)}).observe(document,{childList:!0,subtree:!0});function i(e){const a={};return e.integrity&&(a.integrity=e.integrity),e.referrerPolicy&&(a.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?a.credentials="include":e.crossOrigin==="anonymous"?a.credentials="omit":a.credentials="same-origin",a}function s(e){if(e.ep)return;e.ep=!0;const a=i(e);fetch(e.href,a)}})();(function(){const n=document.createElement("link").relList;if(n&&n.supports&&n.supports("modulepreload"))return;for(const s of document.querySelectorAll('link[rel="modulepreload"]'))i(s);new MutationObserver(s=>{for(const e of s)if(e.type==="childList")for(const a of e.addedNodes)a.tagName==="LINK"&&a.rel==="modulepreload"&&i(a)}).observe(document,{childList:!0,subtree:!0});function t(s){const e={};return s.integrity&&(e.integrity=s.integrity),s.referrerPolicy&&(e.referrerPolicy=s.referrerPolicy),s.crossOrigin==="use-credentials"?e.credentials="include":s.crossOrigin==="anonymous"?e.credentials="omit":e.credentials="same-origin",e}function i(s){if(s.ep)return;s.ep=!0;const e=t(s);fetch(s.href,e)}})();const r="1.1.0",o=new Date().toISOString(),c="https://fulfillment-backend.up.railway.app";document.querySelector("#app").innerHTML=`
   <div class="app-container">
     <header class="app-header">
       <div class="header-content">
@@ -21,7 +6,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <span class="logo-icon">🏨</span>
           <h1>履约驱动酒店管理系统</h1>
         </div>
-        <div class="version">v${APP_VERSION}</div>
+        <div class="version">v${r}</div>
       </div>
     </header>
 
@@ -190,87 +175,28 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <p>&copy; 2025 履约驱动酒店管理系统 | 
            <a href="https://github.com/archpeng" target="_blank" rel="noopener">archpeng</a>
         </p>
-        <p>构建时间: ${BUILD_TIME.split('T')[0]}</p>
+        <p>构建时间: ${o.split("T")[0]}</p>
       </div>
     </footer>
   </div>
-`
-
-// 添加交互功能
-document.addEventListener('DOMContentLoaded', () => {
-  // 平滑滚动
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href')!);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
-
-  // 特性卡片悬停效果
-  document.querySelectorAll('.feature-card').forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      card.style.transform = 'translateY(-5px)';
-      card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-    });
-    
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'translateY(0)';
-      card.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
-    });
-  });
-
-  // 后端API测试功能
-  document.getElementById('test-backend-btn')?.addEventListener('click', async () => {
-    const button = document.getElementById('test-backend-btn') as HTMLButtonElement;
-    const resultDiv = document.getElementById('api-test-result') as HTMLDivElement;
-    
-    button.disabled = true;
-    button.textContent = '测试中...';
-    resultDiv.style.display = 'block';
-    resultDiv.innerHTML = '<p>🔄 正在连接后端API...</p>';
-    
-    try {
-      // 测试健康检查
-      const healthResponse = await fetch(`${API_BASE_URL}/health`);
-      const healthData = await healthResponse.json();
-      
-      // 测试版本信息
-      const versionResponse = await fetch(`${API_BASE_URL}/api/version`);
-      const versionData = await versionResponse.json();
-      
-      resultDiv.innerHTML = `
+`;document.addEventListener("DOMContentLoaded",()=>{var n;document.querySelectorAll('a[href^="#"]').forEach(t=>{t.addEventListener("click",function(i){i.preventDefault();const s=document.querySelector(this.getAttribute("href"));s&&s.scrollIntoView({behavior:"smooth"})})}),document.querySelectorAll(".feature-card").forEach(t=>{t.addEventListener("mouseenter",()=>{t.style.transform="translateY(-5px)",t.style.boxShadow="0 10px 30px rgba(0,0,0,0.2)"}),t.addEventListener("mouseleave",()=>{t.style.transform="translateY(0)",t.style.boxShadow="0 4px 15px rgba(0,0,0,0.1)"})}),(n=document.getElementById("test-backend-btn"))==null||n.addEventListener("click",async()=>{const t=document.getElementById("test-backend-btn"),i=document.getElementById("api-test-result");t.disabled=!0,t.textContent="测试中...",i.style.display="block",i.innerHTML="<p>🔄 正在连接后端API...</p>";try{const s=await(await fetch(`${c}/health`)).json(),e=await(await fetch(`${c}/api/version`)).json();i.innerHTML=`
         <div class="api-success">
           <h4>✅ 后端API连接成功！</h4>
           <div class="api-details">
-            <p><strong>服务状态：</strong>${healthData.status}</p>
-            <p><strong>服务版本：</strong>${versionData.version}</p>
-            <p><strong>架构模式：</strong>${versionData.architecture}</p>
-            <p><strong>响应时间：</strong>${Date.now() - performance.now()}ms</p>
-            <p><strong>后端地址：</strong><a href="${API_BASE_URL}" target="_blank">${API_BASE_URL}</a></p>
+            <p><strong>服务状态：</strong>${s.status}</p>
+            <p><strong>服务版本：</strong>${e.version}</p>
+            <p><strong>架构模式：</strong>${e.architecture}</p>
+            <p><strong>响应时间：</strong>${Date.now()-performance.now()}ms</p>
+            <p><strong>后端地址：</strong><a href="${c}" target="_blank">${c}</a></p>
           </div>
         </div>
-      `;
-    } catch (error) {
-      resultDiv.innerHTML = `
+      `}catch(s){i.innerHTML=`
         <div class="api-error">
           <h4>❌ 后端API连接失败</h4>
           <p>后端服务可能还未部署或启动</p>
-          <p><strong>错误信息：</strong>${error.message}</p>
-          <p><strong>预期地址：</strong>${API_BASE_URL}</p>
+          <p><strong>错误信息：</strong>${s.message}</p>
+          <p><strong>预期地址：</strong>${c}</p>
           <p><em>请参考部署指南完成后端部署</em></p>
         </div>
-      `;
-    } finally {
-      button.disabled = false;
-      button.innerHTML = '<span class="link-icon">🔧</span>测试后端API';
-    }
-  });
-
-  console.log('🎉 履约驱动酒店管理系统已启动！');
-  console.log('📊 当前版本:', APP_VERSION);
-  console.log('🏗️ 架构: DDD + XState + RxDB');
-  console.log('🔗 后端API:', API_BASE_URL);
-});
+      `}finally{t.disabled=!1,t.innerHTML='<span class="link-icon">🔧</span>测试后端API'}}),console.log("🎉 履约驱动酒店管理系统已启动！"),console.log("📊 当前版本:",r),console.log("🏗️ 架构: DDD + XState + RxDB"),console.log("🔗 后端API:",c)});
+//# sourceMappingURL=main-BrxL7gEm.js.map
