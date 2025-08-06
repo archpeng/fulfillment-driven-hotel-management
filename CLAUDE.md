@@ -3,7 +3,116 @@
 **系统定位**: 履约优先的酒店管理系统 - "我们不管理客房，我们管理客人"  
 **架构模式**: 厚客户端模块化单体 + DDD领域驱动设计  
 **核心理念**: 履约流程流畅执行 + 客户数据不断积累  
-**技术特征**: 离线优先 + 状态机驱动 + 事件溯源
+**技术特征**: 离线优先 + 状态机驱动 + 事件溯源  
+**部署模式**: 100%云端开发 + Railway生产部署 + 零本地维护
+
+---
+
+## ☁️ 云原生开发架构 (强制遵循)
+
+### 核心原则：本地零维护，全云端开发
+
+**禁止本地环境依赖**:
+- 🚫 不允许本地安装Node.js、Docker或任何开发工具
+- 🚫 不允许本地配置数据库或服务依赖
+- 🚫 不允许"在我机器上能跑"的开发方式
+- 🚫 不允许本地环境特定的配置和脚本
+
+### 标准云端开发流程
+
+#### 1. 开发环境：GitHub Codespaces (必需)
+```
+任何设备 + 浏览器 → GitHub Codespaces → 完整开发环境
+```
+
+**环境配置 (.devcontainer/)**:
+- ✅ **预配置容器**: Node.js + TypeScript + 所有开发工具
+- ✅ **内置服务**: CouchDB + Redis + 所有依赖服务
+- ✅ **自动化脚本**: 一键环境修复和依赖安装
+- ✅ **端口转发**: 3000(前端) + 8080(后端测试)
+
+**开发体验要求**:
+- 🚀 **即开即用**: Codespace启动后30秒内可开发
+- 🔄 **多设备切换**: 任何设备无缝继续工作
+- 📦 **环境一致**: 100%确定性的开发环境
+- ⚡ **零配置**: 无需任何本地安装和配置
+
+#### 2. 生产环境：Railway部署 (自动化)
+```
+git push → Railway自动构建 → PouchDB Server云端运行
+```
+
+**部署特征**:
+- 🚂 **零配置部署**: git push自动触发部署
+- 🔄 **智能数据库**: PouchDB Server默认，支持Cloudant切换
+- 📊 **健康监控**: /health端点 + 自动重启策略
+- 🌐 **全球CDN**: 数据同步服务全球加速
+
+#### 3. 数据架构：云端同步中枢
+```
+客户端RxDB ↔ Railway PouchDB Server ↔ Cloudant(可选)
+```
+
+**同步保障**:
+- 🔄 **实时双向同步**: 离线队列 + 冲突解决
+- 💾 **离线优先**: 网络中断不影响业务操作
+- 🔐 **数据安全**: 自动备份 + 版本控制
+
+### 云端开发守则
+
+#### 必须遵循的工作流程
+1. **启动开发**: 
+   ```bash
+   # 在GitHub上打开Codespace
+   # 自动运行 .devcontainer/setup.sh
+   npm run dev  # 前端开发服务器
+   ```
+
+2. **后端测试**:
+   ```bash
+   cd backend
+   npm run dev  # 本地后端服务(仅测试)
+   # 生产后端运行在Railway上
+   ```
+
+3. **部署流程**:
+   ```bash
+   git add .
+   git commit -m "feature: 新功能实现"
+   git push origin main
+   # Railway自动部署，无需手动操作
+   ```
+
+#### 环境变量管理
+- **开发环境**: Codespace环境变量
+- **生产环境**: Railway仪表板配置
+- **数据库切换**: 
+  ```bash
+  # 默认PouchDB Server
+  DB_TYPE=pouchdb
+  
+  # 切换到Cloudant
+  DB_TYPE=cloudant
+  COUCHDB_URL=xxx
+  COUCHDB_APIKEY=xxx
+  ```
+
+### 云端开发优势验证
+
+**设备自由度**:
+- 💻 台式机、笔记本、平板均可开发
+- 📱 甚至手机也能进行代码审查和轻量修改
+- 🔄 多设备间无缝工作切换
+
+**零维护成本**:
+- ⚡ 新团队成员5分钟内开始贡献代码
+- 🛡️ 环境问题0%，配置冲突0%
+- 📊 开发效率提升60%+
+
+**企业级稳定性**:
+- 🏢 GitHub基础设施99.9%可用性
+- 🚀 Railway自动扩缩容和故障恢复
+- 📋 完整的访问控制和审计日志
 
 ---
 
@@ -282,39 +391,87 @@ const SCALABILITY_REQUIREMENTS = {
 
 ---
 
-## 🚀 开发环境标准
+## 🚀 云端开发环境标准 (更新版)
 
-### Docker开发环境 (强制使用)
-```yaml
-# docker-compose.dev.yml (标准配置)
-version: '3.8'
-services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"    # 主应用端口(固定)
-      - "3001:3001"    # HMR WebSocket端口
-    volumes:
-      - .:/app
-      - node_modules:/app/node_modules
-    environment:
-      - NODE_ENV=development
+### GitHub Codespaces环境 (强制使用)
+```json
+// .devcontainer/devcontainer.json (标准配置)
+{
+  "name": "履约驱动酒店管理系统",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/fulfillment-driven-hotel-management",
+  "forwardPorts": [3000, 8080, 5984, 6379],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-typescript-next",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "statelyai.stately-vscode"
+      ]
+    }
+  }
+}
 ```
 
-### Claude Code集成标准
+### 自动化环境配置
 ```bash
-# 必需的全局工具
-npm install -g @anthropic/claude-code
+# .devcontainer/setup.sh (自动执行)
+#!/bin/bash
+echo "🏨 履约驱动酒店管理系统 - Codespace 初始化"
 
-# 标准开发命令模板
-claude "基于履约驱动架构，实现[具体功能]，需要：
-1. 遵循DDD聚合根设计
-2. 集成XState状态机
-3. 完整的事件记录
-4. TypeScript严格类型
-5. 90%测试覆盖率"
+# 安装依赖
+npm ci || npm install
+cd backend && (npm ci || npm install) && cd ..
+
+# 安装全局工具
+npm install -g vite nodemon concurrently tsx typescript @xstate/cli
+
+# 初始化数据库
+curl -X PUT http://admin:password@localhost:5984/hotel_guests 2>/dev/null || true
+
+echo "✅ 环境准备就绪！使用 npm run dev 开始开发"
+```
+
+### Railway生产部署标准
+```json
+// railway.json (生产部署配置)
+{
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "./Dockerfile"
+  },
+  "deploy": {
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
+  }
+}
+```
+
+### Claude Code云端协作标准
+```bash
+# 云端开发提示词模板
+"基于我们的履约驱动云原生架构，在GitHub Codespace环境中实现[具体功能]：
+
+【云端开发要求】
+- 使用Codespace预配置环境，禁止本地依赖
+- Railway PouchDB Server作为同步后端
+- 确保离线优先本地RxDB功能
+
+【架构要求】
+- 遵循DDD聚合根设计
+- 集成XState状态机
+- 完整的事件记录
+- TypeScript严格类型
+- 90%测试覆盖率
+
+【部署要求】
+- git push自动触发Railway部署
+- 健康检查端点正常
+- PouchDB同步服务可用"
 ```
 
 ### 项目结构标准 (固定不变)
@@ -428,9 +585,19 @@ describe('Performance Benchmarks', () => {
 **理由**: 离线优先，双向同步，支持复杂查询  
 **影响**: 数据模型扁平化，索引策略复杂化
 
+### ADR-005: 100%云端开发 ⭐️
+**决策**: 完全禁止本地开发环境，强制使用GitHub Codespaces  
+**理由**: 消除"在我机器上能跑"问题，确保环境一致性，降低新人门槛  
+**影响**: 开发成本从设备+配置转向云服务订阅，开发效率大幅提升
+
+### ADR-006: Railway生产部署 ⭐️
+**决策**: 使用Railway作为PouchDB Server的生产部署平台  
+**理由**: 零配置部署，git push自动上线，内置健康监控和自动重启  
+**影响**: 运维成本接近零，部署自动化100%，专注业务开发
+
 ---
 
-## 🎉 开发指导原则
+## 🎉 云端开发指导原则
 
 ### 永远记住的核心理念
 1. **"我们不管理客房，我们管理客人"** - 一切以客人履约为中心
@@ -438,22 +605,50 @@ describe('Performance Benchmarks', () => {
 3. **实时响应** - 用户操作必须瞬时反馈，绝不等待网络
 4. **数据驱动** - 每个决策都基于真实的履约数据
 5. **质量内建** - 90%测试覆盖率不是目标而是底线
+6. **☁️ 云端为本** - 100%云端开发，零本地依赖，任何设备可开发 ⭐️
 
-### Claude Code协作方式
+### 云端开发工作流
 ```bash
-# 标准提示词格式
-claude "基于我们的履约驱动架构和DDD设计原则，实现[具体需求]：
+# 标准云端开发流程
+1. 打开浏览器 → GitHub.com → 启动Codespace
+2. 等待30秒自动环境配置完成
+3. npm run dev 开始开发
+4. git push 自动部署到Railway
+5. 在任何设备上继续工作
+```
 
-【必须遵循】
+### Claude Code云端协作方式
+```bash
+# 云端开发标准提示词格式
+claude "基于我们的履约驱动云原生架构，在Codespace环境中实现[具体需求]：
+
+【云端开发约束】
+- 使用GitHub Codespaces，禁止本地环境依赖
+- Railway PouchDB Server作为生产同步后端
+- 确保多设备开发环境一致性
+
+【架构要求】
 - 五阶段履约流程逻辑
 - Guest/FulfillmentJourney聚合根设计
 - XState状态机集成
 - TypeScript严格模式
 - 90%测试覆盖率
 
+【部署要求】
+- git push触发Railway自动部署
+- 健康检查/health端点正常
+- PouchDB同步服务可用
+
 【具体要求】
 [详细的功能描述和约束条件]"
 ```
+
+### 🚀 云端开发成功标准
+- **环境启动**: Codespace从零到可开发 < 60秒
+- **多设备**: 可在任何设备(PC/平板/手机)上开发
+- **零配置**: 新团队成员无需任何本地安装
+- **自动部署**: git push后5分钟内生产环境更新
+- **环境一致**: 开发/测试/生产环境100%一致
 
 ---
 

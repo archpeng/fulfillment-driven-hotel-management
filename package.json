@@ -8,6 +8,9 @@
     "dev": "npx vite --host 0.0.0.0",
     "build": "npx vite build", 
     "preview": "npx vite preview --host 0.0.0.0",
+    "mobile:dev": "npx vite --host 0.0.0.0 --config vite.mobile.config.ts",
+    "mobile:build": "node scripts/build-mobile.js",
+    "mobile:preview": "npx vite preview --host 0.0.0.0 --outDir dist-mobile",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
@@ -26,7 +29,7 @@
     "codespace:test": "node scripts/test-codespace-config.cjs",
     "codespace:setup": ".devcontainer/setup.sh",
     "codespace:fix": "./scripts/fix-codespace-deps.sh",
-    "help": "echo '🏨 履约驱动酒店管理系统 - 可用命令:' && echo '开发: npm run dev' && echo '构建: npm run build' && echo '测试: npm run test' && echo 'Codespace修复: npm run codespace:fix'"
+    "help": "echo '🏨 履约驱动酒店管理系统 - 可用命令:' && echo '开发: npm run dev' && echo 'iOS开发: npm run mobile:dev' && echo '构建: npm run build' && echo 'iOS构建: npm run mobile:build' && echo '测试: npm run test' && echo 'Codespace修复: npm run codespace:fix'"
   },
   "keywords": [
     "hotel-management",
@@ -39,7 +42,10 @@
     "rich-client",
     "claude-code",
     "docker",
-    "enterprise"
+    "enterprise",
+    "ios-optimized",
+    "mobile-first",
+    "pwa"
   ],
   "author": "SaaS Developer",
   "license": "MIT",

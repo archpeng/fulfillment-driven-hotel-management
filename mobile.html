@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  
+  <!-- PWA配置 -->
+  <title>履约驱动管理 - iPhone专用版</title>
+  <meta name="description" content="我们不管理客房，我们管理客人 - iOS原生体验的酒店履约管理系统">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="履约驱动">
+  
+  <!-- iOS图标 -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/mobile-manifest.json">
+  
+  <!-- iOS启动画面 -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-startup-image" 
+        media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/splash/iphone-xr-portrait.png">
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+        href="/splash/iphone-x-portrait.png">
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+        href="/splash/iphone-8-portrait.png">
+
+  <style>
+    /* 重置样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+      /* iOS安全区域适配 */
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      height: 100%;
+      background: #F2F2F7;
+      overflow-x: hidden;
+      /* 禁用iOS橡皮筋效果 */
+      overscroll-behavior: none;
+      /* 禁用文本选择 */
+      -webkit-user-select: none;
+      user-select: none;
+      /* 禁用长按菜单 */
+      -webkit-touch-callout: none;
+      /* 禁用点击高亮 */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* iOS样式增强 */
+    input, button, textarea {
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+    }
+
+    /* 加载动画 */
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #007AFF, #5856D6);
+      color: white;
+      text-align: center;
+    }
+
+    .app-logo {
+      font-size: 72px;
+      margin-bottom: 24px;
+      animation: bounce 2s infinite;
+    }
+
+    .app-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .app-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* iOS键盘适配 */
+    @supports (padding-bottom: env(keyboard-inset-height)) {
+      .keyboard-aware {
+        padding-bottom: env(keyboard-inset-height);
+      }
+    }
+
+    /* 隐藏加载屏幕 */
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    /* iOS Dark Mode支持 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #000;
+        color: #fff;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 应用加载屏幕 -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="app-logo">🏨</div>
+    <div class="app-title">履约驱动管理</div>
+    <div class="app-subtitle">我们不管理客房，我们管理客人</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- 移动应用容器 -->
+  <div id="mobile-root"></div>
+
+  <script>
+    // iOS设备检测
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+
+    // 性能监控
+    const startTime = performance.now();
+    
+    // PWA安装检测
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    // iOS状态栏颜色适配
+    if (isIOS) {
+      // 动态调整状态栏样式
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      const metaStatusBar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+      
+      // 检测系统主题
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDark) {
+        metaThemeColor.content = '#1C1C1E';
+        metaStatusBar.content = 'black-translucent';
+      }
+    }
+
+    // 禁用iOS双击缩放
+    document.addEventListener('touchstart', function(event) {
+      if (event.touches.length > 1) {
+        event.preventDefault();
+      }
+    });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // 禁用iOS橡皮筋回弹
+    document.body.addEventListener('touchmove', function(e) {
+      if (e.target === document.body) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // 应用启动完成后隐藏加载屏幕
+    window.addEventListener('load', function() {
+      const loadTime = performance.now() - startTime;
+      const minLoadTime = 1500; // 最少显示1.5秒
+
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.add('hidden');
+        
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 300);
+        
+        console.log(`🏨 履约驱动管理系统已启动，加载时间: ${loadTime.toFixed(2)}ms`);
+      }, Math.max(0, minLoadTime - loadTime));
+    });
+
+    // iOS振动反馈
+    window.iOSHaptic = {
+      light: () => {
+        if ('vibrate' in navigator) {
+          navigator.vibrate(50);
+        }
+      },
+      medium: () => {
+        if ('vibrate' in navigator) {
+          navigator.vibrate([50, 30, 50]);
+        }
+      },
+      heavy: () => {
+        if ('vibrate' in navigator) {
+          navigator.vibrate([100, 50, 100]);
+        }
+      }
+    };
+
+    // 性能监控
+    window.addEventListener('DOMContentLoaded', function() {
+      // 监控首次内容绘制
+      new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+          console.log(`📊 ${entry.name}: ${entry.startTime.toFixed(2)}ms`);
+        }
+      }).observe({ entryTypes: ['navigation', 'paint'] });
+    });
+
+    // 离线检测
+    window.addEventListener('online', function() {
+      console.log('📶 网络已连接');
+      document.body.classList.remove('offline');
+    });
+
+    window.addEventListener('offline', function() {
+      console.log('📵 网络已断开，启用离线模式');
+      document.body.classList.add('offline');
+    });
+  </script>
+
+  <!-- 移动应用脚本 -->
+  <script type="module" src="/src/mobile-app.tsx"></script>
+</body>
+</html>
