@@ -10,6 +10,7 @@ import { fulfillmentMachine, type FulfillmentContext, type FulfillmentEvent } fr
 import { FulfillmentEventTracker, type EventPatternAnalysis, type EventAnomaly } from '../domain/fulfillment/services/FulfillmentEventTracker';
 import { OfflineModeTestSuite, type OfflineTestReport } from '../services/OfflineModeTestSuite';
 import { PerformanceMonitoringService, initializePerformanceMonitoring, type PerformanceReport, type SystemHealth } from '../services/PerformanceMonitoringService';
+import { FulfillmentFunnelChart } from './FulfillmentFunnelChart';
 import { createActor } from 'xstate';
 
 export class FulfillmentDashboard {
@@ -24,6 +25,7 @@ export class FulfillmentDashboard {
   private syncMetrics: SyncMetrics | null = null;
   private performanceReport: PerformanceReport | null = null;
   private systemHealth: SystemHealth | null = null;
+  private funnelChart?: FulfillmentFunnelChart;
 
   constructor(containerId: string) {
     const container = document.getElementById(containerId);
@@ -88,6 +90,9 @@ export class FulfillmentDashboard {
       // 渲染界面
       await this.render();
 
+      // 初始化漏斗图
+      this.initializeFunnelChart();
+
       // 设置定时更新
       this.startAutoUpdate();
 
@@ -95,6 +100,56 @@ export class FulfillmentDashboard {
     } catch (error) {
       console.error('❌ 仪表板初始化失败:', error);
       this.renderError(error);
+    }
+  }
+
+  /**
+   * 初始化履约漏斗图
+   */
+  private async initializeFunnelChart(): Promise<void> {
+    try {
+      // 创建漏斗图实例
+      this.funnelChart = new FulfillmentFunnelChart('fulfillment-funnel-container', {
+        width: 800,
+        height: 500,
+        showLabels: true,
+        showConversionRates: true,
+        showTrends: true,
+        highlightBottlenecks: true
+      });
+
+      // 获取阶段数据
+      const stats = await rxdbManager.getStats();
+      const funnelData = stats.byStage.map(stage => ({
+        stage: stage.stage,
+        count: stage.count
+      }));
+
+      // 设置漏斗数据
+      this.funnelChart.setData(funnelData);
+
+      console.log('✅ 履约漏斗图初始化完成');
+    } catch (error) {
+      console.error('❌ 漏斗图初始化失败:', error);
+    }
+  }
+
+  /**
+   * 更新漏斗图数据
+   */
+  private async updateFunnelChart(): Promise<void> {
+    if (!this.funnelChart) return;
+
+    try {
+      const stats = await rxdbManager.getStats();
+      const funnelData = stats.byStage.map(stage => ({
+        stage: stage.stage,
+        count: stage.count
+      }));
+
+      this.funnelChart.updateData(funnelData);
+    } catch (error) {
+      console.error('❌ 更新漏斗图失败:', error);
     }
   }
 
@@ -152,6 +207,11 @@ export class FulfillmentDashboard {
             
             ${this.renderStageStats(stats.byStage)}
           </div>
+        </section>
+
+        <!-- 履约转化漏斗图 -->
+        <section class="fulfillment-funnel" style="margin-bottom: 32px;">
+          <div id="fulfillment-funnel-container"></div>
         </section>
 
         <!-- 履约阶段流程图 -->
@@ -855,6 +915,7 @@ export class FulfillmentDashboard {
   private startAutoUpdate(): void {
     this.updateInterval = window.setInterval(async () => {
       await this.updateSyncStatus();
+      await this.updateFunnelChart(); // 更新漏斗图
       // 可以添加更多自动更新逻辑
     }, 30000); // 每30秒更新一次
   }

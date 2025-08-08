@@ -162,7 +162,16 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <h2>项目展示</h2>
         <div class="demo-content">
           <p>这是一个完整的履约驱动酒店管理系统演示。</p>
-          <p><strong>注意</strong>: 完整的前端应用正在开发中，当前展示为项目介绍页面。</p>
+          <p><strong>✨ 新增功能</strong>: 履约转化漏斗图组件，帮助识别获客卡点！</p>
+          <div class="feature-highlight" style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 20px 0; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="font-size: 20px;">🎯</span>
+              <strong style="color: #92400e;">履约漏斗分析</strong>
+            </div>
+            <p style="color: #92400e; margin: 0; font-size: 14px;">
+              可视化展示从认知到反馈的完整转化流程，智能识别卡点，提供优化建议
+            </p>
+          </div>
           
           <div class="demo-links">
             <button id="test-backend-btn" class="demo-link">
@@ -173,6 +182,14 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
               <span class="link-icon">🚀</span>
               启动履约管理系统
             </button>
+            <button id="funnel-chart-btn" class="demo-link" style="background: #f59e0b;">
+              <span class="link-icon">🎯</span>
+              履约漏斗图分析
+            </button>
+            <a href="./examples/funnel-chart-example.html" target="_blank" class="demo-link" style="background: #8b5cf6;">
+              <span class="link-icon">📊</span>
+              组件功能演示
+            </a>
             <a href="https://github.com/archpeng/fulfillment-driven-hotel-management" 
                class="demo-link" target="_blank" rel="noopener">
               <span class="link-icon">📚</span>
@@ -267,6 +284,36 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // 恢复介绍页面
       document.querySelector('.app-container')!.style.display = 'block';
+    }
+  });
+
+  // 履约漏斗图分析功能
+  document.getElementById('funnel-chart-btn')?.addEventListener('click', async () => {
+    const button = document.getElementById('funnel-chart-btn') as HTMLButtonElement;
+    const originalContent = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="link-icon">⏳</span>加载中...';
+    
+    try {
+      // 打开漏斗图预览页面
+      window.open('./funnel-preview.html', '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+      
+      // 延迟恢复按钮状态
+      setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalContent;
+      }, 1000);
+      
+    } catch (error) {
+      console.error('打开漏斗图页面失败:', error);
+      
+      // 如果弹窗失败，直接跳转
+      window.location.href = './funnel-preview.html';
+      
+      // 恢复按钮状态
+      button.disabled = false;
+      button.innerHTML = originalContent;
     }
   });
 

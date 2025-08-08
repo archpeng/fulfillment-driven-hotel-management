@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>履约漏斗图组件示例</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      color: #1f2937;
+      font-size: 32px;
+      margin: 0 0 16px 0;
+    }
+    
+    .header p {
+      color: #6b7280;
+      font-size: 18px;
+      margin: 0;
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .demo-section h2 {
+      color: #1f2937;
+      font-size: 24px;
+      margin: 0 0 20px 0;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 12px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .control-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .control-group input, 
+    .control-group select,
+    .control-group button {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .control-group button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    
+    .control-group button:hover {
+      background: #2563eb;
+    }
+    
+    .insights-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .insight-card {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    
+    .insight-card h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #1f2937;
+    }
+    
+    .insight-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .insight-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    
+    .insight-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .bottleneck {
+      color: #dc2626;
+      font-weight: 500;
+    }
+    
+    .healthy {
+      color: #059669;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 履约漏斗图组件</h1>
+      <p>可视化展示履约转化漏斗，识别获客流程中的关键卡点</p>
+    </div>
+
+    <!-- 基础漏斗图示例 -->
+    <div class="demo-section">
+      <h2>📊 基础漏斗图</h2>
+      <div class="controls">
+        <div class="control-group">
+          <label>认知阶段人数</label>
+          <input type="number" id="awareness-count" value="1000" min="0">
+        </div>
+        <div class="control-group">
+          <label>评估阶段人数</label>
+          <input type="number" id="evaluation-count" value="400" min="0">
+        </div>
+        <div class="control-group">
+          <label>预订阶段人数</label>
+          <input type="number" id="booking-count" value="80" min="0">
+        </div>
+        <div class="control-group">
+          <label>体验阶段人数</label>
+          <input type="number" id="experiencing-count" value="75" min="0">
+        </div>
+        <div class="control-group">
+          <label>反馈阶段人数</label>
+          <input type="number" id="feedback-count" value="50" min="0">
+        </div>
+        <div class="control-group">
+          <label>操作</label>
+          <button onclick="updateFunnelData()">更新数据</button>
+        </div>
+      </div>
+      
+      <div id="funnel-container-1"></div>
+      
+      <div class="insights-panel">
+        <div class="insight-card">
+          <h3>🚨 转化瓶颈</h3>
+          <ul class="insight-list" id="bottlenecks-list">
+            <li>数据加载中...</li>
+          </ul>
+        </div>
+        <div class="insight-card">
+          <h3>💡 优化建议</h3>
+          <ul class="insight-list" id="suggestions-list">
+            <li>数据加载中...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自定义样式示例 -->
+    <div class="demo-section">
+      <h2>🎨 自定义样式漏斗图</h2>
+      <div class="controls">
+        <div class="control-group">
+          <label>图表宽度</label>
+          <input type="number" id="chart-width" value="700" min="400" max="1000">
+        </div>
+        <div class="control-group">
+          <label>图表高度</label>
+          <input type="number" id="chart-height" value="450" min="300" max="600">
+        </div>
+        <div class="control-group">
+          <label>显示标签</label>
+          <select id="show-labels">
+            <option value="true">是</option>
+            <option value="false">否</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>显示转化率</label>
+          <select id="show-conversion">
+            <option value="true">是</option>
+            <option value="false">否</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>高亮瓶颈</label>
+          <select id="highlight-bottlenecks">
+            <option value="true">是</option>
+            <option value="false">否</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>操作</label>
+          <button onclick="updateChartConfig()">应用配置</button>
+        </div>
+      </div>
+      
+      <div id="funnel-container-2"></div>
+    </div>
+
+    <!-- 实时数据示例 -->
+    <div class="demo-section">
+      <h2>⚡ 实时数据漏斗图</h2>
+      <p style="color: #6b7280; margin-bottom: 20px;">
+        模拟实时数据变化，每3秒自动更新一次数据
+      </p>
+      <div class="controls">
+        <div class="control-group">
+          <label>自动更新</label>
+          <button id="toggle-realtime" onclick="toggleRealtimeUpdate()">开始更新</button>
+        </div>
+        <div class="control-group">
+          <label>更新间隔</label>
+          <select id="update-interval">
+            <option value="1000">1秒</option>
+            <option value="3000" selected>3秒</option>
+            <option value="5000">5秒</option>
+            <option value="10000">10秒</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="funnel-container-3"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    // 这里应该导入FulfillmentFunnelChart，为了示例我们创建一个简化版本
+    class DemoFulfillmentFunnelChart {
+      constructor(containerId, config = {}) {
+        this.container = document.getElementById(containerId);
+        this.config = {
+          width: 600,
+          height: 400,
+          showLabels: true,
+          showConversionRates: true,
+          highlightBottlenecks: true,
+          ...config
+        };
+        this.data = [];
+      }
+
+      setData(rawData) {
+        // 简化的数据处理逻辑
+        const stageOrder = ['awareness', 'evaluation', 'booking', 'experiencing', 'feedback'];
+        const sortedData = rawData.sort((a, b) => 
+          stageOrder.indexOf(a.stage) - stageOrder.indexOf(b.stage)
+        );
+
+        this.data = sortedData.map((item, index) => {
+          let conversionRate = 100;
+          if (index > 0) {
+            const prevCount = sortedData[index - 1].count;
+            conversionRate = prevCount > 0 ? (item.count / prevCount) * 100 : 0;
+          }
+
+          const isBottleneck = conversionRate < this.getBottleneckThreshold(item.stage);
+
+          return {
+            stage: item.stage,
+            stageName: this.getStageName(item.stage),
+            count: item.count,
+            conversionRate,
+            isBottleneck
+          };
+        });
+
+        this.render();
+      }
+
+      render() {
+        const totalCount = this.data.reduce((sum, item) => sum + item.count, 0);
+        const overallConversion = this.data.length > 0 
+          ? ((this.data[this.data.length - 1].count / this.data[0].count) * 100).toFixed(1)
+          : '0';
+
+        this.container.innerHTML = `
+          <div style="background: #f8fafc; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <!-- 头部统计 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e2e8f0;">
+              <div>
+                <h3 style="font-size: 24px; font-weight: 700; color: #1f2937; margin: 0;">
+                  🎯 履约转化漏斗分析
+                </h3>
+                <p style="color: #6b7280; margin: 4px 0 0 0;">
+                  识别获客流程中的关键卡点和优化机会
+                </p>
+              </div>
+              <div style="text-align: right;">
+                <div style="display: flex; gap: 32px;">
+                  <div>
+                    <div style="font-size: 32px; font-weight: 700; color: #059669;">
+                      ${totalCount.toLocaleString()}
+                    </div>
+                    <div style="color: #6b7280; font-size: 14px;">总客人数</div>
+                  </div>
+                  <div>
+                    <div style="font-size: 32px; font-weight: 700; color: #dc2626;">
+                      ${overallConversion}%
+                    </div>
+                    <div style="color: #6b7280; font-size: 14px;">整体转化率</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 漏斗图 -->
+            <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+              <svg width="${this.config.width}" height="${this.config.height}" style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${this.renderSVGContent()}
+              </svg>
+            </div>
+
+            <!-- 分析面板 -->
+            ${this.renderAnalysisPanel()}
+          </div>
+        `;
+      }
+
+      renderSVGContent() {
+        if (this.data.length === 0) return '<text x="50%" y="50%" text-anchor="middle" fill="#6b7280">暂无数据</text>';
+
+        const maxCount = Math.max(...this.data.map(d => d.count));
+        const funnelWidth = this.config.width * 0.6;
+        const funnelHeight = this.config.height * 0.8;
+        const startY = 40;
+        const stageHeight = funnelHeight / this.data.length;
+
+        let svgContent = '';
+
+        this.data.forEach((stageData, index) => {
+          const widthRatio = stageData.count / maxCount;
+          const currentWidth = funnelWidth * widthRatio * 0.8 + funnelWidth * 0.2;
+          
+          const y = startY + index * stageHeight;
+          const x = (this.config.width - currentWidth) / 2;
+
+          const color = stageData.isBottleneck && this.config.highlightBottlenecks
+            ? '#dc2626'
+            : this.getStageColor(stageData.stage);
+
+          // 漏斗矩形
+          svgContent += `
+            <rect x="${x}" y="${y}" width="${currentWidth}" height="${stageHeight * 0.8}" 
+                  rx="8" fill="${color}" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+          `;
+
+          if (this.config.showLabels) {
+            const centerX = this.config.width / 2;
+            const centerY = y + (stageHeight * 0.4);
+
+            // 阶段名称
+            svgContent += `
+              <text x="${centerX}" y="${centerY - 10}" text-anchor="middle" 
+                    font-family="-apple-system, BlinkMacSystemFont, sans-serif" 
+                    font-size="16" font-weight="600" fill="#1f2937">
+                ${stageData.stageName}
+              </text>
+            `;
+
+            // 人数
+            svgContent += `
+              <text x="${centerX}" y="${centerY + 15}" text-anchor="middle" 
+                    font-family="-apple-system, BlinkMacSystemFont, sans-serif" 
+                    font-size="24" font-weight="700" fill="#ffffff">
+                ${stageData.count.toLocaleString()}
+              </text>
+            `;
+
+            // 转化率
+            if (this.config.showConversionRates && index > 0) {
+              svgContent += `
+                <text x="${centerX}" y="${centerY + 35}" text-anchor="middle" 
+                      font-family="-apple-system, BlinkMacSystemFont, sans-serif" 
+                      font-size="14" font-weight="500" fill="rgba(255,255,255,0.9)">
+                  ${stageData.conversionRate.toFixed(1)}%
+                </text>
+              `;
+            }
+          }
+
+          // 瓶颈警告图标
+          if (stageData.isBottleneck && this.config.highlightBottlenecks) {
+            const iconX = x + currentWidth - 30;
+            const iconY = y + 10;
+            svgContent += `
+              <circle cx="${iconX}" cy="${iconY}" r="10" fill="#fbbf24" stroke="#ffffff" stroke-width="2"/>
+              <text x="${iconX}" y="${iconY + 4}" text-anchor="middle" 
+                    font-family="-apple-system, BlinkMacSystemFont, sans-serif" 
+                    font-size="12" font-weight="700" fill="#ffffff">!</text>
+            `;
+          }
+
+          // 转化箭头
+          if (index < this.data.length - 1) {
+            const arrowY1 = y + stageHeight * 0.8 + 10;
+            const arrowY2 = startY + (index + 1) * stageHeight - 10;
+            const centerX = this.config.width / 2;
+            
+            svgContent += `
+              <path d="M ${centerX - 15} ${arrowY1} L ${centerX} ${arrowY2} L ${centerX + 15} ${arrowY1}" 
+                    stroke="${this.data[index + 1].isBottleneck ? '#dc2626' : '#6b7280'}" 
+                    stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            `;
+          }
+        });
+
+        return svgContent;
+      }
+
+      renderAnalysisPanel() {
+        const bottlenecks = this.data.filter(d => d.isBottleneck);
+        
+        return `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+            <!-- 瓶颈分析 -->
+            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h4 style="font-size: 18px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0;">
+                🚨 转化瓶颈分析
+              </h4>
+              ${bottlenecks.length === 0 
+                ? '<p style="color: #059669;">🎉 恭喜！当前没有发现明显的转化瓶颈。</p>'
+                : bottlenecks.map(bottleneck => `
+                    <div style="padding: 12px; background: #fef2f2; border-left: 4px solid #dc2626; border-radius: 4px; margin-bottom: 12px;">
+                      <div style="font-weight: 600; color: #dc2626; margin-bottom: 4px;">
+                        ${bottleneck.stageName}
+                      </div>
+                      <div style="color: #6b7280; font-size: 14px;">
+                        转化率: ${bottleneck.conversionRate.toFixed(1)}%
+                      </div>
+                    </div>
+                  `).join('')
+              }
+            </div>
+
+            <!-- 优化建议 -->
+            <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h4 style="font-size: 18px; font-weight: 600; color: #1f2937; margin: 0 0 16px 0;">
+                💡 优化建议
+              </h4>
+              ${this.generateSuggestions().map(suggestion => `
+                <div style="padding: 12px; background: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 4px; margin-bottom: 12px;">
+                  <div style="font-weight: 600; color: #0ea5e9; margin-bottom: 4px;">
+                    ${suggestion.stage}
+                  </div>
+                  <div style="color: #6b7280; font-size: 14px;">
+                    ${suggestion.suggestion}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      getStageName(stage) {
+        const names = {
+          awareness: '认知阶段',
+          evaluation: '评估阶段',
+          booking: '预订阶段',
+          experiencing: '体验阶段',
+          feedback: '反馈阶段'
+        };
+        return names[stage] || stage;
+      }
+
+      getStageColor(stage) {
+        const colors = {
+          awareness: '#3B82F6',
+          evaluation: '#8B5CF6',
+          booking: '#10B981',
+          experiencing: '#F59E0B',
+          feedback: '#EF4444'
+        };
+        return colors[stage] || '#6B7280';
+      }
+
+      getBottleneckThreshold(stage) {
+        const thresholds = {
+          awareness: 100,
+          evaluation: 40,
+          booking: 25,
+          experiencing: 85,
+          feedback: 70
+        };
+        return thresholds[stage] || 50;
+      }
+
+      generateSuggestions() {
+        const suggestions = [];
+        this.data.forEach(stageData => {
+          if (stageData.isBottleneck) {
+            const stageSuggestions = {
+              awareness: {
+                stage: '认知阶段',
+                suggestion: '加强品牌曝光和营销活动，优化SEO和社交媒体推广'
+              },
+              evaluation: {
+                stage: '评估阶段',
+                suggestion: '优化产品展示页面，增加客户评价和案例展示'
+              },
+              booking: {
+                stage: '预订阶段',
+                suggestion: '简化预订流程，提供优惠政策，优化移动端体验'
+              },
+              experiencing: {
+                stage: '体验阶段',
+                suggestion: '加强客户关系管理，及时跟进预订状态'
+              },
+              feedback: {
+                stage: '反馈阶段',
+                suggestion: '建立客户反馈激励机制，优化服务质量'
+              }
+            };
+            
+            const suggestion = stageSuggestions[stageData.stage];
+            if (suggestion) {
+              suggestions.push(suggestion);
+            }
+          }
+        });
+        return suggestions;
+      }
+
+      updateData(newData) {
+        this.setData(newData);
+      }
+    }
+
+    // 创建图表实例
+    let funnelChart1, funnelChart2, funnelChart3;
+    let realtimeInterval = null;
+
+    // 初始化图表
+    function initializeCharts() {
+      // 基础漏斗图
+      funnelChart1 = new DemoFulfillmentFunnelChart('funnel-container-1');
+      
+      // 自定义样式漏斗图
+      funnelChart2 = new DemoFulfillmentFunnelChart('funnel-container-2', {
+        width: 700,
+        height: 450,
+        showLabels: true,
+        showConversionRates: true,
+        highlightBottlenecks: true
+      });
+      
+      // 实时数据漏斗图
+      funnelChart3 = new DemoFulfillmentFunnelChart('funnel-container-3');
+
+      // 设置初始数据
+      updateFunnelData();
+    }
+
+    // 更新漏斗数据
+    window.updateFunnelData = function() {
+      const data = [
+        { stage: 'awareness', count: parseInt(document.getElementById('awareness-count').value) },
+        { stage: 'evaluation', count: parseInt(document.getElementById('evaluation-count').value) },
+        { stage: 'booking', count: parseInt(document.getElementById('booking-count').value) },
+        { stage: 'experiencing', count: parseInt(document.getElementById('experiencing-count').value) },
+        { stage: 'feedback', count: parseInt(document.getElementById('feedback-count').value) }
+      ];
+
+      funnelChart1.setData(data);
+      funnelChart2.setData(data);
+      funnelChart3.setData(data);
+
+      // 更新洞察面板
+      updateInsights(funnelChart1);
+    };
+
+    // 更新图表配置
+    window.updateChartConfig = function() {
+      const config = {
+        width: parseInt(document.getElementById('chart-width').value),
+        height: parseInt(document.getElementById('chart-height').value),
+        showLabels: document.getElementById('show-labels').value === 'true',
+        showConversionRates: document.getElementById('show-conversion').value === 'true',
+        highlightBottlenecks: document.getElementById('highlight-bottlenecks').value === 'true'
+      };
+
+      funnelChart2 = new DemoFulfillmentFunnelChart('funnel-container-2', config);
+      
+      // 使用当前数据重新渲染
+      const data = [
+        { stage: 'awareness', count: parseInt(document.getElementById('awareness-count').value) },
+        { stage: 'evaluation', count: parseInt(document.getElementById('evaluation-count').value) },
+        { stage: 'booking', count: parseInt(document.getElementById('booking-count').value) },
+        { stage: 'experiencing', count: parseInt(document.getElementById('experiencing-count').value) },
+        { stage: 'feedback', count: parseInt(document.getElementById('feedback-count').value) }
+      ];
+      funnelChart2.setData(data);
+    };
+
+    // 切换实时更新
+    window.toggleRealtimeUpdate = function() {
+      const button = document.getElementById('toggle-realtime');
+      
+      if (realtimeInterval) {
+        clearInterval(realtimeInterval);
+        realtimeInterval = null;
+        button.textContent = '开始更新';
+        button.style.background = '#3b82f6';
+      } else {
+        const interval = parseInt(document.getElementById('update-interval').value);
+        realtimeInterval = setInterval(() => {
+          generateRandomData();
+        }, interval);
+        button.textContent = '停止更新';
+        button.style.background = '#dc2626';
+      }
+    };
+
+    // 生成随机数据（模拟实时变化）
+    function generateRandomData() {
+      const baseData = [1000, 400, 80, 75, 50];
+      const variance = 0.2; // 20%的变化幅度
+      
+      const data = baseData.map((base, index) => {
+        const change = (Math.random() - 0.5) * 2 * variance;
+        const newValue = Math.max(1, Math.floor(base * (1 + change)));
+        
+        // 确保漏斗递减趋势
+        if (index > 0) {
+          const prevValue = data[index - 1].count;
+          return {
+            stage: ['awareness', 'evaluation', 'booking', 'experiencing', 'feedback'][index],
+            count: Math.min(newValue, prevValue)
+          };
+        }
+        
+        return {
+          stage: ['awareness', 'evaluation', 'booking', 'experiencing', 'feedback'][index],
+          count: newValue
+        };
+      });
+
+      funnelChart3.setData(data);
+    }
+
+    // 更新洞察面板
+    function updateInsights(chart) {
+      const bottlenecks = chart.data.filter(d => d.isBottleneck);
+      
+      // 更新瓶颈列表
+      const bottlenecksList = document.getElementById('bottlenecks-list');
+      if (bottlenecks.length === 0) {
+        bottlenecksList.innerHTML = '<li class="healthy">🎉 当前没有发现转化瓶颈</li>';
+      } else {
+        bottlenecksList.innerHTML = bottlenecks.map(b => 
+          `<li class="bottleneck">${b.stageName}: ${b.conversionRate.toFixed(1)}% 转化率</li>`
+        ).join('');
+      }
+
+      // 更新建议列表
+      const suggestionsList = document.getElementById('suggestions-list');
+      const suggestions = chart.generateSuggestions();
+      if (suggestions.length === 0) {
+        suggestionsList.innerHTML = '<li class="healthy">✅ 所有阶段转化率正常</li>';
+      } else {
+        suggestionsList.innerHTML = suggestions.map(s => 
+          `<li>${s.stage}: ${s.suggestion}</li>`
+        ).join('');
+      }
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initializeCharts);
+  </script>
+</body>
+</html>
